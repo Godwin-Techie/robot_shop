@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+  <title id="title">Stan's Robot Shop Capstone II observability architecture</title>
+  <desc id="desc">Robot Shop application workloads and observability services inside AKS, with metrics to Prometheus and Grafana, logs through Fluent Bit to Loki, payment traces to Jaeger, and alerts from Grafana to Slack.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#ea580c"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 15px; fill: #526077; }
+      .zone-title { font-size: 18px; font-weight: 700; }
+      .card-title { font-size: 16px; font-weight: 700; }
+      .card-sub { font-size: 12px; fill: #526077; }
+      .tiny { font-size: 11px; fill: #526077; }
+      .zone { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; }
+      .app { fill: #eff6ff; stroke: #60a5fa; stroke-width: 2; }
+      .metrics { fill: #ecfdf5; stroke: #34d399; stroke-width: 2; }
+      .logs { fill: #fff7ed; stroke: #fb923c; stroke-width: 2; }
+      .traces { fill: #f5f3ff; stroke: #a78bfa; stroke-width: 2; }
+      .external { fill: #fff; stroke: #94a3b8; stroke-width: 2; }
+      .flow { fill: none; stroke-width: 3; }
+      .data { fill: none; stroke-width: 2.5; stroke-dasharray: 8 6; }
+      .label-bg { fill: #fff; stroke: #e2e8f0; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="960" fill="#ffffff"/>
+  <text x="48" y="48" class="title">Stan's Robot Shop — Capstone II Architecture</text>
+  <text x="48" y="73" class="subtitle">AKS workloads, telemetry pipelines, SLO alerting, and external entry points</text>
+
+  <rect x="35" y="105" width="1280" height="805" rx="18" class="zone"/>
+  <text x="58" y="137" class="zone-title">Azure Kubernetes Service (AKS)</text>
+  <rect x="58" y="153" width="600" height="730" rx="14" fill="#f8fbff" stroke="#bfdbfe" stroke-width="2"/>
+  <text x="80" y="184" class="zone-title">robot-shop namespace</text>
+  <rect x="682" y="153" width="610" height="730" rx="14" fill="#fbfdff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="704" y="184" class="zone-title">monitoring / logging / tracing namespaces</text>
+
+  <rect x="68" y="224" width="152" height="70" rx="12" class="external"/>
+  <text x="144" y="253" class="card-title" text-anchor="middle">Browser</text>
+  <text x="144" y="274" class="card-sub" text-anchor="middle">storefront user</text>
+  <rect x="68" y="320" width="152" height="70" rx="12" class="app"/>
+  <text x="144" y="349" class="card-title" text-anchor="middle">Load generator</text>
+  <text x="144" y="370" class="card-sub" text-anchor="middle">1 client · ERROR=0</text>
+
+  <rect x="308" y="250" width="290" height="92" rx="14" class="app"/>
+  <text x="453" y="283" class="card-title" text-anchor="middle">web · NGINX</text>
+  <text x="453" y="306" class="card-sub" text-anchor="middle">storefront + NGINX exporter</text>
+  <text x="453" y="325" class="tiny" text-anchor="middle">basic request / connection metrics</text>
+
+  <rect x="82" y="445" width="170" height="94" rx="12" class="app"/>
+  <text x="167" y="478" class="card-title" text-anchor="middle">cart</text>
+  <text x="167" y="501" class="card-sub" text-anchor="middle">Prometheus metrics</text>
+  <text x="167" y="520" class="tiny" text-anchor="middle">request count · latency</text>
+
+  <rect x="273" y="445" width="170" height="94" rx="12" class="app"/>
+  <text x="358" y="478" class="card-title" text-anchor="middle">catalogue</text>
+  <text x="358" y="501" class="card-sub" text-anchor="middle">Prometheus metrics</text>
+  <text x="358" y="520" class="tiny" text-anchor="middle">request count · latency</text>
+
+  <rect x="464" y="445" width="170" height="94" rx="12" class="app"/>
+  <text x="549" y="478" class="card-title" text-anchor="middle">payment</text>
+  <text x="549" y="501" class="card-sub" text-anchor="middle">Prometheus + OpenTelemetry</text>
+  <text x="549" y="520" class="tiny" text-anchor="middle">request count · latency · traces</text>
+
+  <rect x="88" y="626" width="150" height="72" rx="12" class="external"/>
+  <text x="163" y="656" class="card-title" text-anchor="middle">Redis</text>
+  <text x="163" y="678" class="card-sub" text-anchor="middle">cart state</text>
+  <rect x="278" y="626" width="150" height="72" rx="12" class="external"/>
+  <text x="353" y="656" class="card-title" text-anchor="middle">user</text>
+  <text x="353" y="678" class="card-sub" text-anchor="middle">user / order API</text>
+  <rect x="468" y="626" width="150" height="72" rx="12" class="external"/>
+  <text x="543" y="656" class="card-title" text-anchor="middle">RabbitMQ</text>
+  <text x="543" y="678" class="card-sub" text-anchor="middle">order queue</text>
+  <text x="82" y="751" class="tiny">Other Robot Shop services run to support the application.</text>
+
+  <rect x="1328" y="261" width="225" height="84" rx="14" class="external"/>
+  <text x="1440" y="294" class="card-title" text-anchor="middle">Payment gateway</text>
+  <text x="1440" y="318" class="card-sub" text-anchor="middle">external HTTPS endpoint</text>
+  <rect x="1328" y="535" width="225" height="84" rx="14" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+  <text x="1440" y="568" class="card-title" text-anchor="middle">Slack</text>
+  <text x="1440" y="592" class="card-sub" text-anchor="middle">Grafana alert notifications</text>
+
+  <rect x="708" y="218" width="250" height="102" rx="14" class="metrics"/>
+  <text x="833" y="253" class="card-title" text-anchor="middle">Prometheus</text>
+  <text x="833" y="277" class="card-sub" text-anchor="middle">scrapes /metrics + web exporter</text>
+  <text x="833" y="298" class="tiny" text-anchor="middle">24h retention · 2 GB cap</text>
+
+  <rect x="1002" y="218" width="250" height="102" rx="14" class="metrics"/>
+  <text x="1127" y="253" class="card-title" text-anchor="middle">Grafana</text>
+  <text x="1127" y="277" class="card-sub" text-anchor="middle">dashboard + 99% / 24h SLO</text>
+  <text x="1127" y="298" class="tiny" text-anchor="middle">evaluates alert rule</text>
+
+  <rect x="708" y="412" width="250" height="100" rx="14" class="logs"/>
+  <text x="833" y="447" class="card-title" text-anchor="middle">Fluent Bit DaemonSet</text>
+  <text x="833" y="471" class="card-sub" text-anchor="middle">tails node container logs</text>
+  <text x="833" y="491" class="tiny" text-anchor="middle">adds Kubernetes metadata</text>
+
+  <rect x="1002" y="412" width="250" height="100" rx="14" class="logs"/>
+  <text x="1127" y="447" class="card-title" text-anchor="middle">Loki</text>
+  <text x="1127" y="471" class="card-sub" text-anchor="middle">service + detected-level search</text>
+  <text x="1127" y="491" class="tiny" text-anchor="middle">24h retention · temporary storage</text>
+
+  <rect x="850" y="650" width="270" height="100" rx="14" class="traces"/>
+  <text x="985" y="685" class="card-title" text-anchor="middle">Jaeger v2.22.0</text>
+  <text x="985" y="709" class="card-sub" text-anchor="middle">OTLP receiver + trace UI</text>
+  <text x="985" y="730" class="tiny" text-anchor="middle">payment traces · in-memory storage</text>
+
+  <path d="M220 258 H308" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M220 355 C260 355 270 310 308 310" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M405 342 C345 390 210 388 167 445" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M453 342 V410 H358 V445" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M500 342 C535 385 549 395 549 445" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+
+  <path d="M167 539 V626" class="flow" stroke="#64748b" marker-end="url(#arrow-blue)"/>
+  <path d="M549 539 C500 580 420 585 353 626" class="flow" stroke="#64748b" marker-end="url(#arrow-blue)"/>
+  <path d="M549 539 V626" class="flow" stroke="#64748b" marker-end="url(#arrow-blue)"/>
+  <path d="M634 480 C700 480 655 302 708 280" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M252 480 C640 570 635 284 708 274" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M443 480 C625 505 650 293 708 286" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M598 294 C650 294 660 270 708 270" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M958 270 H1002" class="flow" stroke="#15803d" marker-end="url(#arrow-green)"/>
+
+  <path d="M634 506 C690 506 670 462 708 462" class="data" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <path d="M252 506 C465 585 580 500 708 480" class="data" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <path d="M443 506 C540 555 610 500 708 489" class="data" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <path d="M958 462 H1002" class="flow" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <path d="M1127 320 V412" class="data" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+
+  <path d="M549 539 C650 610 725 652 850 690" class="data" stroke="#7c3aed" marker-end="url(#arrow-purple)"/>
+  <path d="M1120 700 C1180 640 1170 410 1127 320" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M1252 270 H1328 V577" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <path d="M634 482 H670 V205 H1328 V261" class="flow" stroke="#64748b" marker-end="url(#arrow-blue)"/>
+
+  <rect x="710" y="790" width="552" height="62" rx="10" fill="#fff" stroke="#e2e8f0"/>
+  <line x1="730" y1="812" x2="774" y2="812" class="flow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <text x="786" y="817" class="tiny">application request / dependency</text>
+  <line x1="1002" y1="812" x2="1046" y2="812" class="data" stroke="#15803d" marker-end="url(#arrow-green)"/>
+  <text x="1058" y="817" class="tiny">metrics</text>
+  <line x1="730" y1="835" x2="774" y2="835" class="data" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <text x="786" y="840" class="tiny">logs</text>
+  <line x1="1002" y1="835" x2="1046" y2="835" class="data" stroke="#7c3aed" marker-end="url(#arrow-purple)"/>
+  <text x="1058" y="840" class="tiny">traces (OTLP)</text>
+
+  <text x="48" y="940" class="tiny">Private ClusterIP monitoring services are accessed locally with kubectl port-forward. No public monitoring LoadBalancer is used.</text>
+</svg>
